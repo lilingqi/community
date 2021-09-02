@@ -9,13 +9,16 @@
     <select id="selectDiscussPosts" resultType="DiscussPost">
         select <include refid="selectFields"></include>
         from discuss_post
+--         status=2相当于拉入了黑名单不予显示
         where status != 2
         <if test="userId != 0">
             and user_id = #{userId}
         </if>
         order by type desc,create_time desc
+--         offset是起始数据，limit是一页最多显示多少条数据
         limit #{offset}, #{limit}
     </select>
+    <!--返回类型是常规类型，能加上页尽量加上，因为会有一些莫名其妙的错误-->
     <select id="selectDiscussPostRows" resultType="int">
         select count(id)
         from discuss_post

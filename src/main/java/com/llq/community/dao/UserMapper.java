@@ -20,10 +20,11 @@ public interface UserMapper {
     User selectByEmail(String email);
 
     int insertUser(User user);
-
+    //方法有参数的时候，最好是加上@param注解，防止sql语句发生错误，加上注解之后数据在域中的形式相当于map{id=id，status=status}
+    //如果没加的话相当于map{param1=id，param2=status}
     int updateStatus(@Param("id") int id, @Param("status") int status);
 
     int updateHeader(@Param("id") int id, @Param("headerUrl") String headerUrl);
 
-    int updatePassword( @Param("id") int id, @Param("password") String password);  //有多个参数时，一定要用到这个注解
+    int updatePassword( @Param("id") int id, @Param("password") String password);
 }
