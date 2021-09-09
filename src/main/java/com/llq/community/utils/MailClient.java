@@ -26,7 +26,6 @@ public class MailClient {
     //发件人用户名
     @Value("${spring.mail.username}") //@Value(“${xxxx}”)注解从配置文件读取值。@Value(“${xxxx}”)注解从配置文件读取值
     private String from;
-
     public void sendMail(String to, String subject, String content){
 
         try {
