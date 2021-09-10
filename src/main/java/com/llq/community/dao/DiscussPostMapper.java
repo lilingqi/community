@@ -22,9 +22,13 @@ public interface DiscussPostMapper {
     int selectDiscussPostRows(@Param("userId") int userId);
 
     //将发布的帖子信息插入数据库
-    int insertDiscussPost(DiscussPost discussPost); //只有一个实体类的是惠普最好是不要加注解param
+    int insertDiscussPost(DiscussPost discussPost); //只有一个实体类的时候最好是不要加注解param
 
     //查看帖子详情
     DiscussPost selectDiscussPostById(int id);
+
+    //更新评论数量
+    int updateCommentCount(@Param("id") int id, @Param("commentCount") int commentCount);
+
 
 }
