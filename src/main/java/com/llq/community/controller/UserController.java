@@ -2,6 +2,7 @@ package com.llq.community.controller;
 
 import com.llq.community.annatation.LoginRequired;
 import com.llq.community.entity.User;
+import com.llq.community.service.LikeService;
 import com.llq.community.service.UserService;
 import com.llq.community.utils.CommunityUtil;
 import com.llq.community.utils.HostHolder;
@@ -49,6 +50,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
     //去到账号设置页面
     @LoginRequired
@@ -125,41 +129,54 @@ public class UserController {
         }
     }
 
+    //修改密码
+    @LoginRequired
+    @RequestMapping(path = "/change", method = RequestMethod.POST)
+    public String change(String oldWord, String newWord, String confirmWord, Model model) {
+        if (StringUtils.isBlank(oldWord)) {
+            model.addAttribute("oldMsg", "原密码不能为空！");
+            return "/site/setting";
+        }
+        if (StringUtils.isBlank(newWord)) {
+            model.addAttribute("newMsg", "新密码不能为空！");
+            return "/site/setting";
+        }
+        if (!newWord.equals(confirmWord)) {
+            model.addAttribute("cfMsg", "两次密码不一致！");
+            return "/site/setting";
+        }
+        User user = hostHolder.getUser();
+        if (!CommunityUtil.md5(oldWord + user.getSalt()).equals(user.getPassword())) {
+            model.addAttribute("oldMsg", "原密码不正确！");
+            return "/site/setting";
+        }
+        if (oldWord.equals(newWord)) {
+            model.addAttribute("newMsg", "不能修改为原来的密码！");
+            return "/site/setting";
+        }
+        int userId = user.getId();
+        String salt = user.getSalt();
+        newWord = CommunityUtil.md5(newWord + salt);
+        userService.changePassword(userId, newWord);
+        model.addAttribute("msg", "修改密码成功！");
+        model.addAttribute("target", "/index");
 
-@LoginRequired
-@RequestMapping(path = "/change", method = RequestMethod.POST)
-public String change(String oldWord, String newWord, String confirmWord, Model model) {
-    if (StringUtils.isBlank(oldWord)) {
-        model.addAttribute("oldMsg", "原密码不能为空！");
-        return "/site/setting";
+        return "/site/operate-result";
     }
-    if (StringUtils.isBlank(newWord)) {
-        model.addAttribute("newMsg", "新密码不能为空！");
-        return "/site/setting";
-    }
-    if (!newWord.equals(confirmWord)) {
-        model.addAttribute("cfMsg", "两次密码不一致！");
-        return "/site/setting";
-    }
-    User user = hostHolder.getUser();
-    if (!CommunityUtil.md5(oldWord + user.getSalt()).equals(user.getPassword())) {
-        model.addAttribute("oldMsg", "原密码不正确！");
-        return "/site/setting";
-    }
-    if (oldWord.equals(newWord)) {
-        model.addAttribute("newMsg", "不能修改为原来的密码！");
-        return "/site/setting";
-    }
-    int userId = user.getId();
-    String salt = user.getSalt();
-    newWord = CommunityUtil.md5(newWord + salt);
-    userService.changePassword(userId, newWord);
-    model.addAttribute("msg", "修改密码成功！");
-    model.addAttribute("target", "/index");
 
-    return "/site/operate-result";
-}
+   //个人主页
+    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("该用户不存在");
+        }
+        model.addAttribute("user", user);
+        //点赞数
+        int likeCount = likeService.findUserLikeCount(user.getId());
+        model.addAttribute("likeCount", likeCount);
 
+        return "/site/profile";
 
-
+    }
 }

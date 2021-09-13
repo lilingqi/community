@@ -34,7 +34,7 @@ public class DiscussPostService {
         if (discussPost == null){
             throw new IllegalArgumentException("参数不能为空");
         }
-        //转义html标记
+        //转义html标记，将损害网页的一些字符过滤
         discussPost.setTitle(HtmlUtils.htmlEscape(discussPost.getTitle()));
         discussPost.setContent(HtmlUtils.htmlEscape(discussPost.getContent()));
 
@@ -51,6 +51,6 @@ public class DiscussPostService {
     }
 
     public int updateCommentCount(int id, int commentCount){
-        return discussPostMapper.updateCommentCount(id, commentCount);
-    }
+    return discussPostMapper.updateCommentCount(id, commentCount);
+}
 }
