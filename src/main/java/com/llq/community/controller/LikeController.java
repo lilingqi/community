@@ -40,10 +40,9 @@ public class LikeController {
         //返回得结果
         Map<String, Object> map = new HashMap<>();
         map.put("likeCount", likeCount);
-        map.put("likeStatus", likeCount);
+        map.put("likeStatus", likeStatus);
 
         return CommunityUtil.getJSONString(0,null,map);
-
 
     }
 }

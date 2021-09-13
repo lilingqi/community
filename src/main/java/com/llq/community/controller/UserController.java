@@ -2,8 +2,10 @@ package com.llq.community.controller;
 
 import com.llq.community.annatation.LoginRequired;
 import com.llq.community.entity.User;
+import com.llq.community.service.FollowService;
 import com.llq.community.service.LikeService;
 import com.llq.community.service.UserService;
+import com.llq.community.utils.CommunityConstant;
 import com.llq.community.utils.CommunityUtil;
 import com.llq.community.utils.HostHolder;
 import com.sun.org.apache.xpath.internal.operations.Mod;
@@ -33,7 +35,7 @@ import java.lang.annotation.Retention;
  */
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements CommunityConstant {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -53,6 +55,9 @@ public class UserController {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private FollowService followService;
 
     //去到账号设置页面
     @LoginRequired
@@ -176,6 +181,20 @@ public class UserController {
         int likeCount = likeService.findUserLikeCount(user.getId());
         model.addAttribute("likeCount", likeCount);
 
+        //关注数量
+        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount", followeeCount);
+
+        //粉丝数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+        model.addAttribute("followerCount", followerCount);
+
+        //是否已关注
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("hasFollowed", hasFollowed);
         return "/site/profile";
 
     }
