@@ -10,6 +10,10 @@ public class RedisKeyUtil {
     private static final String PREFIX_USER_LIKE = "like:user";
     private static final String PREFIX_FOLLOWEE = "followee";
     private static final String PREFIX_FOLLOWER = "follower";
+    private static final String PREFIX_KAPTCHA = "kaptcha";
+    private static final  String PREFIX_TICKET = "ticket";
+    private static final  String PREFIX_USER = "user";
+
 
     //某个实体的赞
     // like:entity:entityType:entityId -> set(userId)
@@ -31,5 +35,23 @@ public class RedisKeyUtil {
     public static String getFollowerKey(int entityType, int entityId) {
         return PREFIX_FOLLOWER + SPLIT + entityType + SPLIT + entityId;
     }
+    //解决存储验证码的问题
+    //怎么将验证码和当前用户联系起来，因为有可能有很多用户同时在刷新验证码，所以存入redis中的key需要每个用户对应一份
+    // 可能我们会想到将userId来作为key的一部分，但是此时用户还没有登录，所以我们可以随机生成一个字符串保存在cookie中响应给
+    //当前界面，那么在当前界面每次请求的时候都会将这个cookie发送给服务器，从服务器中的redis数据库找到自己对应的验证码
+    public static String getKaptchaKey(String owner) {
+        return PREFIX_KAPTCHA + SPLIT + owner;
+    }
+
+    //登录凭证的key
+    public static String getTicketKey(String ticket) {
+        return PREFIX_TICKET + SPLIT + ticket;
+    }
+
+    //用户的key
+    public static String getUserKey(int userId) {
+        return PREFIX_USER + SPLIT + userId;
+    }
+
 
 }
