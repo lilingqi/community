@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 @Mapper
 @Repository
-//@Deprecated 表示该方法已经过时，不建议再使用，但是仍然是可以用的
+@Deprecated //表示该方法已经过时，不建议再使用，但是仍然是可以用的   我们用redis来存储登录凭证
 public interface LoginTicketMapper {
     @Insert({
             "insert into login_ticket(user_id, ticket, status, expired) ",
