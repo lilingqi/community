@@ -1,9 +1,7 @@
 package com.llq.community.controller;
 
-import com.llq.community.entity.Comment;
-import com.llq.community.entity.DiscussPost;
-import com.llq.community.entity.Page;
-import com.llq.community.entity.User;
+import com.llq.community.Event.EventProducer;
+import com.llq.community.entity.*;
 import com.llq.community.service.CommentService;
 import com.llq.community.service.DiscussPostService;
 import com.llq.community.service.LikeService;
@@ -40,6 +38,8 @@ public class DiscussPostController implements CommunityConstant {
     private CommentService commentService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private EventProducer eventProducer;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
@@ -54,6 +54,13 @@ public class DiscussPostController implements CommunityConstant {
         post.setUserId(user.getId());
         post.setCreateTime(new Date());
         discussPostService.insertDiscussPost(post);
+        //触发发帖事件，发布帖子的时候，要及时将发布的帖子存到es里面去
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
         return CommunityUtil.getJSONString(0, "发布成功");
     }
 

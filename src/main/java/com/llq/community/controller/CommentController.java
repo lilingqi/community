@@ -32,7 +32,7 @@ public class CommentController implements CommunityConstant {
     @Autowired
     private HostHolder holder;
     @RequestMapping(path = "/add/{discussPostId}", method = RequestMethod.POST)
-    public String addComment(@PathVariable("discussPostId") int disscussPostId, Comment comment){
+    public String addComment(@PathVariable("discussPostId") int discussPostId, Comment comment){
         comment.setUserId(holder.getUser().getId());
         comment.setStatus(0);
         comment.setCreateTime(new Date());
@@ -41,7 +41,7 @@ public class CommentController implements CommunityConstant {
         //触发评论事件
         Event event = new Event().setTopic(TOPIC_COMMENT)
                 .setUserId(holder.getUser().getId()).setEntityType(comment.getEntityType())
-                .setEntityId(comment.getEntityId()).setData("postId", disscussPostId); //在添加评论的时候，前端页面是提供了评论的对象类型和id的
+                .setEntityId(comment.getEntityId()).setData("postId", discussPostId); //在添加评论的时候，前端页面是提供了评论的对象类型和id的
 
         if (comment.getEntityType() == ENTITY_TYPE_POST) {
             //找到评论的帖子，再将帖子的发布者找出来
@@ -52,7 +52,18 @@ public class CommentController implements CommunityConstant {
             event.setEntityUserId(target.getUserId());
         }
         eventProducer.fireEvent(event);
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            // 触发发帖事件(因为帖子中有个评论数量，当评论帖子的时候，帖子是会发生变化的)
+            event = new Event()
+                    .setTopic(TOPIC_PUBLISH)
+                    .setUserId(comment.getUserId())
+                    .setEntityType(ENTITY_TYPE_POST)
+                    .setEntityId(discussPostId);
+            eventProducer.fireEvent(event);
+        }
 
-        return "redirect:/discuss/detail/" + disscussPostId;
+
+
+        return "redirect:/discuss/detail/" + discussPostId;
     }
 }

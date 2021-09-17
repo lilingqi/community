@@ -37,6 +37,9 @@ public interface CommunityConstant {
     //主题：关注
     String TOPIC_FOLLOW = "follow";
 
+    //发帖事件
+    String TOPIC_PUBLISH = "publish";
+
     //系统ID
     int SYSTEM_USER_ID = 1;
 }
