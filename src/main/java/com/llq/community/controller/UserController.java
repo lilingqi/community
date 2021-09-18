@@ -60,7 +60,7 @@ public class UserController implements CommunityConstant {
     private FollowService followService;
 
     //去到账号设置页面
-    @LoginRequired
+//    @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String getSettingPage() {
         return "/site/setting";
@@ -71,7 +71,7 @@ public class UserController implements CommunityConstant {
       在多部分请求中接收的上载文件的表示。文件内容存储在内存中或临时存储在磁盘上。在任何一种情况下，
       如果需要，用户负责将文件内容复制到会话级或持久性存储。临时存储将在请求处理结束时清除。
      */
-    @LoginRequired
+//    @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String upload(MultipartFile headerImage, Model model) {
         //判断是否上传了图片
@@ -135,7 +135,7 @@ public class UserController implements CommunityConstant {
     }
 
     //修改密码
-    @LoginRequired
+//    @LoginRequired
     @RequestMapping(path = "/change", method = RequestMethod.POST)
     public String change(String oldWord, String newWord, String confirmWord, Model model) {
         if (StringUtils.isBlank(oldWord)) {
