@@ -30,5 +30,11 @@ public interface DiscussPostMapper {
     //更新评论数量
     int updateCommentCount(@Param("id") int id, @Param("commentCount") int commentCount);
 
+    //修改帖子类型   置顶type=1
+    int updateDiscussPostType(@Param("id") int id, @Param("type") int type);
+
+    //修改帖子状态  加精status= 1，拉黑status=2
+    int updateDiscussPostStatus(@Param("id") int id,  @Param("status") int status);
+
 
 }

@@ -141,7 +141,46 @@ public class DiscussPostController implements CommunityConstant {
         }
         model.addAttribute("comments", commentVoList);
         return "/site/discuss-detail";
-
     }
 
+    //置顶
+    @RequestMapping(path = "top", method = RequestMethod.POST)
+    @ResponseBody
+    public String setTop(int id) {
+        discussPostService.updateDiscussPostType(id,1);
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(holder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+        return CommunityUtil.getJSONString(0, "置顶成功");
+
+    }
+    //加精
+    @RequestMapping(path = "wonderful", method = RequestMethod.POST)
+    @ResponseBody
+    public String setWonderful(int id) {
+        discussPostService.updateDiscussPostStatus(id, 1);
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(holder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+        return CommunityUtil.getJSONString(0, "加精成功");
+    }
+    //删帖
+    @RequestMapping(path = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id) {
+        discussPostService.updateDiscussPostStatus(id, 2);
+        Event event = new Event()
+                .setTopic(TOPIC_DELETE)
+                .setUserId(holder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+        return CommunityUtil.getJSONString(0, "删帖成功");
+    }
 }
