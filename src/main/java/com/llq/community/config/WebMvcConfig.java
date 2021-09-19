@@ -1,5 +1,6 @@
 package com.llq.community.config;
 
+import com.llq.community.controller.interceptor.DataInterceptor;
 import com.llq.community.controller.interceptor.LoginRequiredInterceptor;
 import com.llq.community.controller.interceptor.LoginTicketInterceptor;
 import com.llq.community.controller.interceptor.MessageInterceptor;
@@ -23,6 +24,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private MessageInterceptor messageInterceptor;
 
+    @Autowired
+    private DataInterceptor dataInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
          //获取登录凭证
@@ -35,6 +38,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         //将未读消息的总数携带一下
         registry.addInterceptor(messageInterceptor)
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+
+       //统计访问量和活跃用户
+        registry.addInterceptor(dataInterceptor)
+                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+
+
 
 
     }

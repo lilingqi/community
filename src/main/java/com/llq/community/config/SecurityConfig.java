@@ -50,12 +50,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                ).hasAnyAuthority(
                 AUTHORITY_MODERATOR
                ).antMatchers(
-                "/discuss/delete"
+                "/discuss/delete",
+                "data/**"
                 ).hasAnyAuthority(
                  AUTHORITY_ADMIN
-                )
-                .anyRequest().permitAll()
-                .and().csrf().disable();
+        )
+                .anyRequest().permitAll() //其他得请求任意权限都可以访问
+                .and().csrf().disable(); //将csrf功能关闭
 
         // 权限不够时的处理
         http.exceptionHandling()
