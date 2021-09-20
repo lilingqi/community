@@ -17,7 +17,8 @@ public interface DiscussPostMapper {
     //对于集合类型，在xml配置文件中只用返回相应的泛型类型即可
     List<DiscussPost> selectDiscussPosts(@Param("userId") int userId,
                                          @Param("offset") int offset,
-                                         @Param("limit") int limit);
+                                         @Param("limit") int limit,
+                                         @Param("orderMode") int orderMode);
     //返回某一个用户发过的帖子
     int selectDiscussPostRows(@Param("userId") int userId);
 
@@ -36,5 +37,6 @@ public interface DiscussPostMapper {
     //修改帖子状态  加精status= 1，拉黑status=2
     int updateDiscussPostStatus(@Param("id") int id,  @Param("status") int status);
 
-
+    //更新帖子的分数
+    int updateScore(@Param("id") int id, @Param("score") double score);
 }

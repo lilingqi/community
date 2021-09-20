@@ -7,7 +7,9 @@ import com.llq.community.service.LikeService;
 import com.llq.community.utils.CommunityConstant;
 import com.llq.community.utils.CommunityUtil;
 import com.llq.community.utils.HostHolder;
+import com.llq.community.utils.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +32,9 @@ public class LikeController implements CommunityConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
@@ -60,6 +65,13 @@ public class LikeController implements CommunityConstant {
                     .setData("postId", postId); //需要知道点赞的是哪篇帖子，通知的时候将帖子链接也要发送过来
             eventProducer.fireEvent(event);
         }
+        if (entityType == ENTITY_TYPE_POST) {
+            //获取的key存储了需要重新计算分数的帖子
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            //这里不要用list来存储，因为一个帖子会不停的有人赞和评论，会有重复，用set的话就不会出现这种情况
+            redisTemplate.opsForSet().add(redisKey,postId);
+        }
+
 
         return CommunityUtil.getJSONString(0,null,map);
 

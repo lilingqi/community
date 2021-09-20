@@ -9,9 +9,11 @@ import com.llq.community.service.UserService;
 import com.llq.community.utils.CommunityConstant;
 import com.llq.community.utils.CommunityUtil;
 import com.llq.community.utils.HostHolder;
+import com.llq.community.utils.RedisKeyUtil;
 import org.apache.catalina.Host;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +42,8 @@ public class DiscussPostController implements CommunityConstant {
     private LikeService likeService;
     @Autowired
     private EventProducer eventProducer;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
@@ -162,12 +166,17 @@ public class DiscussPostController implements CommunityConstant {
     @ResponseBody
     public String setWonderful(int id) {
         discussPostService.updateDiscussPostStatus(id, 1);
+        //加精要触发事件，将帖子存到es中
         Event event = new Event()
                 .setTopic(TOPIC_PUBLISH)
                 .setUserId(holder.getUser().getId())
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
         eventProducer.fireEvent(event);
+
+        //加精之后需要重新计算分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,id);
         return CommunityUtil.getJSONString(0, "加精成功");
     }
     //删帖
