@@ -18,7 +18,7 @@ import java.util.Date;
 /**
  * @author llq
  * @create 2021-09-11  20:34
- * 给业务层的方法统一处理日志
+ * 给业务层的方法统一处理日志，这里不用拦截器的原因是因为拦截器只能拦截访问cotroller的方法
  */
 @Component
 @Aspect //指明当前类是一个切面类

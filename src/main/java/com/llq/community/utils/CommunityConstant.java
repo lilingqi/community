@@ -39,8 +39,12 @@ public interface CommunityConstant {
 
     //发帖事件
     String TOPIC_PUBLISH = "publish";
+
     //删帖事件
     String TOPIC_DELETE = "delete";
+
+    //分享图片事件
+    String TOPIC_SHARE = "share";
 
     //系统ID
     int SYSTEM_USER_ID = 1;

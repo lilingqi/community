@@ -1,5 +1,6 @@
 package com.llq.community.config;
 
+
 import com.llq.community.utils.CommunityConstant;
 import com.llq.community.utils.CommunityUtil;
 import org.springframework.context.annotation.Configuration;
@@ -44,19 +45,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                         AUTHORITY_USER,
                         AUTHORITY_ADMIN,
                         AUTHORITY_MODERATOR
-                ).antMatchers(
-                "/discuss/top",
-                "/discuss/wonderful"
-               ).hasAnyAuthority(
-                AUTHORITY_MODERATOR
-               ).antMatchers(
-                "/discuss/delete",
-                "data/**"
-                ).hasAnyAuthority(
-                 AUTHORITY_ADMIN
-        )
-                .anyRequest().permitAll() //其他得请求任意权限都可以访问
-                .and().csrf().disable(); //将csrf功能关闭
+                )
+                .antMatchers(
+                        "/discuss/top",
+                        "/discuss/wonderful"
+                )
+                .hasAnyAuthority(
+                        AUTHORITY_MODERATOR
+                )
+                .antMatchers(
+                        "/discuss/delete",
+                        "/data/**",
+                        "/actuator/**"
+                )
+                .hasAnyAuthority(
+                        AUTHORITY_ADMIN
+                )
+                .anyRequest().permitAll()
+                .and().csrf().disable();
 
         // 权限不够时的处理
         http.exceptionHandling()
